@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Loading Reward...</title>
+
 <style>
 body {
     margin: 0;
@@ -17,6 +18,7 @@ body {
     text-align: center;
 }
 
+/* Loading Section */
 #loading {
     font-size: 28px;
 }
@@ -34,6 +36,7 @@ body {
     background: lime;
 }
 
+/* Warning + Final */
 #warning {
     display: none;
     font-size: 40px;
@@ -45,15 +48,16 @@ body {
     display: none;
     font-size: 80px;
     color: red;
-    animation: glitch 0.15s infinite;
+    animation: glitchText 0.15s infinite;
 }
 
+/* Animations */
 @keyframes flicker {
     0% { opacity: 0.3; }
     100% { opacity: 1; }
 }
 
-@keyframes glitch {
+@keyframes glitchText {
     0% { transform: translate(5px, -5px); }
     25% { transform: translate(-5px, 5px); }
     50% { transform: translate(-8px, 0); }
@@ -73,19 +77,85 @@ body {
     100% { transform: translate(0, 0); }
 }
 
-#crack {
+/* Fake Popups */
+#popupContainer {
     position: fixed;
     width: 100%;
     height: 100%;
     pointer-events: none;
+    top: 0;
+    left: 0;
+}
+
+.popup {
+    position: absolute;
+    width: 200px;
+    background: black;
+    color: red;
+    border: 2px solid red;
+    padding: 10px;
+    font-size: 12px;
+    box-shadow: 0 0 15px red;
+    animation: popupAnim 2s ease-out forwards;
+}
+
+@keyframes popupAnim {
+    0% { transform: scale(0.5); opacity: 0; }
+    30% { opacity: 1; }
+    100% { transform: scale(1.2); opacity: 0; }
+}
+
+/* Static Overlay */
+#static {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: repeating-radial-gradient(circle, #000 0px, #111 2px, #000 4px);
     opacity: 0;
-    background:
-        linear-gradient(45deg, transparent 48%, white 49%, transparent 50%),
-        linear-gradient(-45deg, transparent 48%, white 49%, transparent 50%);
-    background-size: 200px 200px;
+    pointer-events: none;
+    animation: staticMove 0.2s infinite;
+}
+
+@keyframes staticMove {
+    from { background-position: 0 0; }
+    to { background-position: 100px 100px; }
+}
+
+/* Red Glitch Overlay */
+#glitchOverlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: red;
+    opacity: 0;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+}
+
+/* Flash Face */
+#flashFace {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.glitchEffect {
+    animation: glitchScreen 0.15s infinite;
+}
+
+@keyframes glitchScreen {
+    0% { transform: translate(5px, -5px); filter: hue-rotate(0deg); }
+    25% { transform: translate(-5px, 5px); filter: hue-rotate(90deg); }
+    50% { transform: translate(-8px, 0); filter: hue-rotate(180deg); }
+    75% { transform: translate(8px, 5px); filter: hue-rotate(270deg); }
+    100% { transform: translate(0, -5px); filter: hue-rotate(360deg); }
 }
 </style>
 </head>
+
 <body>
 
 <div id="loading">
@@ -95,29 +165,87 @@ body {
     </div>
 </div>
 
-<div id="warning">⚠ SYSTEM BREACH DETECTED ⚠</div>
+<div id="warning">⚠ SIGNAL CORRUPTION DETECTED ⚠</div>
 <div id="gotcha">G̷O̸T̴C̷H̴A̸ 😈</div>
-<div id="crack"></div>
+
+<div id="popupContainer"></div>
+<div id="static"></div>
+<div id="glitchOverlay"></div>
+<img id="flashFace" src="https://i.imgur.com/8Q2QK9p.png">
 
 <script>
 const bar = document.getElementById("bar");
 const loading = document.getElementById("loading");
 const warning = document.getElementById("warning");
 const gotcha = document.getElementById("gotcha");
-const crack = document.getElementById("crack");
+const popupContainer = document.getElementById("popupContainer");
+const staticOverlay = document.getElementById("static");
+const glitchOverlay = document.getElementById("glitchOverlay");
+const flashFace = document.getElementById("flashFace");
 
 let percent = 0;
 
-function playBeep() {
+/* Fake Popup Storm */
+function fakePopupStorm() {
+    const messages = [
+        "SIGNAL LOST",
+        "DATA CORRUPTED",
+        "TRANSMISSION FAILED",
+        "ERROR 0x000F",
+        "CONNECTION UNSTABLE",
+        "SYSTEM GLITCH"
+    ];
+
+    for (let i = 0; i < 18; i++) {
+        const popup = document.createElement("div");
+        popup.className = "popup";
+        popup.innerText = messages[Math.floor(Math.random() * messages.length)];
+        popup.style.top = Math.random() * 80 + "%";
+        popup.style.left = Math.random() * 80 + "%";
+        popupContainer.appendChild(popup);
+        setTimeout(() => popup.remove(), 2000);
+    }
+
+    if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200, 100, 300]);
+    }
+}
+
+/* Horror Meltdown */
+function horrorMeltdown() {
+
+    fakePopupStorm();
+    staticOverlay.style.opacity = 0.4;
+    document.body.classList.add("glitchEffect");
+
+    let flicker = setInterval(() => {
+        glitchOverlay.style.opacity = Math.random() * 0.4;
+    }, 100);
+
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     const oscillator = audioCtx.createOscillator();
     oscillator.type = "sawtooth";
-    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime);
+    oscillator.frequency.setValueAtTime(50, audioCtx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 2);
     oscillator.connect(audioCtx.destination);
     oscillator.start();
-    setTimeout(() => oscillator.stop(), 700);
+
+    setTimeout(() => {
+        flashFace.style.opacity = 1;
+        if (navigator.vibrate) navigator.vibrate([300,100,300]);
+        setTimeout(() => flashFace.style.opacity = 0, 200);
+    }, 1800);
+
+    setTimeout(() => {
+        clearInterval(flicker);
+        document.body.classList.remove("glitchEffect");
+        staticOverlay.style.opacity = 0;
+        glitchOverlay.style.opacity = 0;
+        oscillator.stop();
+    }, 4000);
 }
 
+/* Loading Sequence */
 const interval = setInterval(() => {
     percent += Math.random() * 12;
     if (percent >= 100) {
@@ -126,21 +254,13 @@ const interval = setInterval(() => {
 
         loading.style.display = "none";
         warning.style.display = "block";
-
         document.body.classList.add("shake");
 
         setTimeout(() => {
-            document.body.style.background = "white";
-            playBeep();
-
-            setTimeout(() => {
-                document.body.style.background = "black";
-                crack.style.opacity = 1;
-                warning.style.display = "none";
-                gotcha.style.display = "block";
-                document.body.classList.remove("shake");
-            }, 300);
-
+            warning.style.display = "none";
+            gotcha.style.display = "block";
+            document.body.classList.remove("shake");
+            horrorMeltdown();
         }, 1500);
     }
     bar.style.width = percent + "%";
