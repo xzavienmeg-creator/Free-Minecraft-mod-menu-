@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Loading Reward...</title>
+<style>
+body {
+    margin: 0;
+    background: black;
+    color: white;
+    font-family: monospace;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+#loading {
+    font-size: 28px;
+}
+
+#barContainer {
+    width: 300px;
+    height: 20px;
+    border: 2px solid white;
+    margin: 20px auto;
+}
+
+#bar {
+    height: 100%;
+    width: 0%;
+    background: lime;
+}
+
+#warning {
+    display: none;
+    font-size: 40px;
+    color: red;
+    animation: flicker 0.1s infinite;
+}
+
+#gotcha {
+    display: none;
+    font-size: 80px;
+    color: red;
+    animation: glitch 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+@keyframes glitch {
+    0% { transform: translate(5px, -5px); }
+    25% { transform: translate(-5px, 5px); }
+    50% { transform: translate(-8px, 0); }
+    75% { transform: translate(8px, 5px); }
+    100% { transform: translate(0, -5px); }
+}
+
+.shake {
+    animation: shake 0.1s infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(5px, 5px); }
+    25% { transform: translate(-5px, 5px); }
+    50% { transform: translate(5px, -5px); }
+    75% { transform: translate(-5px, -5px); }
+    100% { transform: translate(0, 0); }
+}
+
+#crack {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        linear-gradient(45deg, transparent 48%, white 49%, transparent 50%),
+        linear-gradient(-45deg, transparent 48%, white 49%, transparent 50%);
+    background-size: 200px 200px;
+}
+</style>
+</head>
+<body>
+
+<div id="loading">
+    Loading Reward...
+    <div id="barContainer">
+        <div id="bar"></div>
+    </div>
+</div>
+
+<div id="warning">⚠ SYSTEM BREACH DETECTED ⚠</div>
+<div id="gotcha">G̷O̸T̴C̷H̴A̸ 😈</div>
+<div id="crack"></div>
+
+<script>
+const bar = document.getElementById("bar");
+const loading = document.getElementById("loading");
+const warning = document.getElementById("warning");
+const gotcha = document.getElementById("gotcha");
+const crack = document.getElementById("crack");
+
+let percent = 0;
+
+function playBeep() {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioCtx.createOscillator();
+    oscillator.type = "sawtooth";
+    oscillator.frequency.setValueAtTime(100, audioCtx.currentTime);
+    oscillator.connect(audioCtx.destination);
+    oscillator.start();
+    setTimeout(() => oscillator.stop(), 700);
+}
+
+const interval = setInterval(() => {
+    percent += Math.random() * 12;
+    if (percent >= 100) {
+        percent = 100;
+        clearInterval(interval);
+
+        loading.style.display = "none";
+        warning.style.display = "block";
+
+        document.body.classList.add("shake");
+
+        setTimeout(() => {
+            document.body.style.background = "white";
+            playBeep();
+
+            setTimeout(() => {
+                document.body.style.background = "black";
+                crack.style.opacity = 1;
+                warning.style.display = "none";
+                gotcha.style.display = "block";
+                document.body.classList.remove("shake");
+            }, 300);
+
+        }, 1500);
+    }
+    bar.style.width = percent + "%";
+}, 200);
+</script>
+
+</body>
+</html>
